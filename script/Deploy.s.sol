@@ -8,6 +8,7 @@ import { Script, console } from "forge-std/Script.sol";
 import { HelperConfig } from "script/helpers/HelperConfig.s.sol";
 
 ///@notice Contracts to be deployed
+import { CLFExample } from "src/CLFExample.sol";
 
 /**
     *@title Core Deploy Script
@@ -22,11 +23,18 @@ contract DeployScript is Script {
         *@notice So, you will need to update the signature to call on the CLI
     */
     function run() external returns(HelperConfig helperConfig_){
-        
+        CLFExample clf;
+        helperConfig_ = new HelperConfig();
+        HelperConfig.NetworkConfig memory config = helperConfig_.getConfig();
+
         ///@notice foundry tool to deploy the contract
         vm.startBroadcast();
         
-        helperConfig_ = new HelperConfig();
+        clf = new CLFExample(
+            config.dataFeeds,
+            config.admin,
+            config.employee
+        );
 
         vm.stopBroadcast();
 
