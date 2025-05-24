@@ -26,12 +26,6 @@ contract CLFExample is Ownable{
     }
     WorkStatus s_workStatus;
 
-    struct WorkSession{
-        uint256 startTime;
-        uint256 endTime;
-    }
-    WorkSession s_session;
-
     ///@notice immutable variable to store the Feeds Address - DON'T DO THIS IN PRODUCTION
     AggregatorV3Interface immutable i_feed;
     ///@notice immutable variable to store employee address
@@ -48,6 +42,8 @@ contract CLFExample is Ownable{
     uint256 internal s_rate;
     ///@notice variable to store the total unpaid worked hours
     uint256 internal s_unpaidWorkTime;
+    ///@notice variable to store the current work session
+    uint256 internal s_currentWorkingSession;
 
     /*///////////////////////////////////
                 Events
@@ -122,7 +118,7 @@ contract CLFExample is Ownable{
         if(s_workStatus == WorkStatus.working) revert  CLFExample_AlreadyStarted(s_workStatus);
 
         s_workStatus = WorkStatus.working;
-        s_session = WorkSession(block.timestamp, 0);
+        s_currentWorkingSession = block.timestamp;
 
         emit CLFExample_WorkingJourneyStarted(block.timestamp);
     }
@@ -136,11 +132,11 @@ contract CLFExample is Ownable{
 
         s_workStatus = WorkStatus.endWorking;
 
-        s_session.endTime = block.timestamp;
+        uint256 unpaidTimeForCurrentSession = block.timestamp - s_currentWorkingSession;
 
-        s_unpaidWorkTime = s_unpaidWorkTime + (block.timestamp - s_session.startTime);
+        s_unpaidWorkTime = s_unpaidWorkTime + unpaidTimeForCurrentSession;
 
-        emit CLFExample_WorkingJourneyFinished(block.timestamp, block.timestamp - s_session.startTime);
+        emit CLFExample_WorkingJourneyFinished(block.timestamp, unpaidTimeForCurrentSession);
     }
 
     /**
