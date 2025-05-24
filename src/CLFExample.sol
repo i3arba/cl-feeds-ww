@@ -38,7 +38,7 @@ contract CLFExample is Ownable{
     ///@notice constant to store the precision multiplier
     uint256 public constant PRECISION_HELPER = 1e18;
 
-    ///@notice rate per hour
+    ///@notice rate per hour using oracle decimals(8)
     uint256 public s_rate;
     ///@notice variable to store the total unpaid worked hours
     uint256 public s_unpaidWorkTime;
