@@ -4,55 +4,78 @@ pragma solidity 0.8.26;
 ///@notice Foundry Stuff
 import {Test, console} from "forge-std/Test.sol";
 
-///@notice Protocol Scripts
-//Import the Scripts that will be used to deploy your protocol contracts E.g:
-import { DeployScript } from "script/Deploy.s.sol";
-import { HelperConfig } from "script/helpers/HelperConfig.s.sol";
-
 ///@notice Protocol Base Contracts
-//Import the contracts that will be tested
+import { CLFExample } from "src/CLFExample.sol";
 
-///@notice Protocol Upgrade Initializers
-//If upgradeable, import scripts for deploy/initialization
+///@notice Data Feeds Mock
+import { MockV3Aggregator } from "@chainlink-local/src/data-feeds/MockV3Aggregator.sol";
 
 
-contract BaseTests is Test {
-    ///@notice Instantiate Scripts
-    DeployScript public s_deploy;
-    HelperConfig public s_helperConfig;
-    
+contract BaseTests is Test {    
     ///@notice Instantiate Protocol Contracts
+    CLFExample public s_example;
 
-    ///@notice Instantiate Upgrade Initializers
-    //if exists, otherwise delete it
+    ///@notice Chainlink mocks
+    MockV3Aggregator public s_aggregator;
 
-    ///@notice Proxied Interfaces
-    //if exists, otherwise delete it
-
-    //Addresses
+    //Testing variables
     address constant s_owner = address(77);
-    address constant s_multiSig = address(777);
-    address constant s_user02 = address(2);
-    address constant s_user03 = address(3);
-    address constant s_user04 = address(4);
-    address constant s_user05 = address(5);
+    address constant s_employee = address(2);
 
-    //Utils - Fake Addresses
-    address uniswapRouter = makeAddr("uniswapRouter");
+    uint256 constant INITIAL_AMOUNT = 100e18;
+
+    //Chainlink Mock info
+    uint8 constant FEED_DECIMALS = 8;
+    int256 constant ORACLE_INITIAL_RETURN = 2_500e8;
+    uint256 constant UNPAID_WORK_TIME = 3600;
 
     function setUp() public virtual {
-        ///@notice 1. Deploys DeployInit script
-        s_deploy = new DeployScript();
+        s_aggregator = new MockV3Aggregator(
+            FEED_DECIMALS,
+            ORACLE_INITIAL_RETURN
+        );
 
-        ///@notice 2. Deploy Base Contracts Using the deploy script and retrieve contracts deployed
-        (
-            s_helperConfig
-            // s_77,
-            // s_777,
-            // s_7777,
-            // s_77777,
-        ) = s_deploy.run();
+        s_example = new CLFExample(
+            address(s_aggregator),
+            s_owner,
+            s_employee
+        );
+
+        ///@notice initiate contract rate
+        vm.startPrank(s_owner);
+        s_example.setRate(s_example.MIN_RATE());
+        vm.stopPrank();
+
+        ///@notice distribute ETH
+        vm.deal(address(s_example), INITIAL_AMOUNT);
+
+        ///@notice labeling addresses for verbosity purpose
+        vm.label(address(this), "TEST CONTRACT");
     }
 
-    
+    function sessionStarterHelper() public {
+        vm.startPrank(s_employee);
+        vm.expectEmit();
+        emit CLFExample.CLFExample_WorkingJourneyStarted(block.timestamp);
+        s_example.startWork();
+
+        vm.stopPrank();
+    }
+
+    function sessionCloserHelper() public {
+        uint256 timeToJump = block.timestamp + UNPAID_WORK_TIME;
+        vm.warp(timeToJump);
+
+        vm.startPrank(s_employee);
+        vm.expectEmit();
+        emit CLFExample.CLFExample_WorkingJourneyFinished(block.timestamp, UNPAID_WORK_TIME);
+        s_example.endWork();
+        vm.stopPrank();
+    }
+
+    function calculationHelper() public returns(uint256 salary_){
+        uint256 workedHours = UNPAID_WORK_TIME * s_example.PRECISION_HELPER();
+
+        salary_ = ((workedHours * s_example.s_rate()) / UNPAID_WORK_TIME) / uint256(ORACLE_INITIAL_RETURN);
+    }
 }

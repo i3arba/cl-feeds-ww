@@ -34,14 +34,14 @@ contract CLFExample is Ownable{
     ///@notice constant variable to store the Feed's heartbeat
     uint256 constant HEARTBEAT = 3600;
     ///@notice constant variable to store the minimum rate per hour value
-    uint256 constant MIN_RATE = 750; //$ 7.50
+    uint256 public constant MIN_RATE = 750_000_000; //$ 7.50 using Oracle Decimals
     ///@notice constant to store the precision multiplier
-    uint256 constant PRECISION_HELPER = 1*10**18;
+    uint256 public constant PRECISION_HELPER = 1e18;
 
     ///@notice rate per hour
-    uint256 internal s_rate;
+    uint256 public s_rate;
     ///@notice variable to store the total unpaid worked hours
-    uint256 internal s_unpaidWorkTime;
+    uint256 public s_unpaidWorkTime;
     ///@notice variable to store the current work session
     uint256 internal s_currentWorkingSession;
 
@@ -219,10 +219,10 @@ contract CLFExample is Ownable{
         *@dev the returned value must be based on 18 decimals.
     */
     function _calculateSalary() internal view returns(uint256 salary_){
-        ///@notice convert seconds to hours
-        uint256 workedHours = (s_unpaidWorkTime * PRECISION_HELPER) / 3600;
+        uint256 workedHours = s_unpaidWorkTime * PRECISION_HELPER;
 
-        uint256 totalInUSD = (workedHours * s_rate);
+        ///@notice convert on value/hours
+        uint256 totalInUSD = (workedHours * s_rate) / 3600;
         
         salary_ = totalInUSD / uint256(_getFeedLastAnswer());
     }
