@@ -34,8 +34,6 @@ contract CLFExample is Ownable{
 
     ///@notice immutable variable to store the Feeds Address - DON'T DO THIS IN PRODUCTION
     AggregatorV3Interface immutable i_feed;
-    ///@notice immutable variable to store employer address
-    address immutable i_employer;
     ///@notice immutable variable to store employee address
     address immutable i_employee;
 
@@ -107,7 +105,6 @@ contract CLFExample is Ownable{
         address _employee
     ) Ownable(_owner){
         i_feed = AggregatorV3Interface(_feeds);
-        i_employer = _owner;
         i_employee = _employee;
         s_workStatus = WorkStatus.endWorking;
     }
