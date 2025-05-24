@@ -11,7 +11,7 @@ import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 contract CLFExample is Ownable{
 
     /*///////////////////////////////////
-            Type declarations
+                Variables
     ///////////////////////////////////*/
     enum ContractStatus{
         valid,
@@ -30,12 +30,8 @@ contract CLFExample is Ownable{
         uint256 startTime;
         uint256 endTime;
     }
-
     WorkSession s_session;
 
-    /*///////////////////////////////////
-                Variables
-    ///////////////////////////////////*/
     ///@notice immutable variable to store the Feeds Address - DON'T DO THIS IN PRODUCTION
     AggregatorV3Interface immutable i_feed;
     ///@notice immutable variable to store employer address
