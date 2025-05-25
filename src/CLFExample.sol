@@ -8,6 +8,13 @@ import { AggregatorV3Interface } from "@chainlink/contracts/src/v0.8/shared/inte
 
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 
+/**
+    *@title Chainlink Data Feeds Example
+    *@author i3arba - 77 Innovation Labs
+    *@notice This is an example of Chainlink Price Feeds implementation
+             and have intentional points of improvement for students to correct
+    *@dev do not use this is production. It's not audited and contain intentional bugs.
+*/
 contract CLFExample is Ownable{
 
     /*///////////////////////////////////
