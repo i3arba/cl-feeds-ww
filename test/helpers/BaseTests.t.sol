@@ -73,7 +73,7 @@ contract BaseTests is Test {
         vm.stopPrank();
     }
 
-    function calculationHelper() public returns(uint256 salary_){
+    function calculationHelper() public view returns(uint256 salary_){
         uint256 workedHours = UNPAID_WORK_TIME * s_example.PRECISION_HELPER();
 
         salary_ = ((workedHours * s_example.s_rate()) / UNPAID_WORK_TIME) / uint256(ORACLE_INITIAL_RETURN);

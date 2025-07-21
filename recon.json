@@ -1,0 +1,42 @@
+{
+  "out/CLFExample.sol/CLFExample.json": {
+    "functions": [
+      {
+        "signature": "endContract()",
+        "actor": "actor",
+        "mode": "fail"
+      },
+      {
+        "signature": "endWork()",
+        "actor": "actor",
+        "mode": "fail"
+      },
+      {
+        "signature": "payEmployee()",
+        "actor": "actor",
+        "mode": "normal"
+      },
+      {
+        "signature": "renounceOwnership()",
+        "actor": "actor",
+        "mode": "normal"
+      },
+      {
+        "signature": "setRate(uint256)",
+        "actor": "admin",
+        "mode": "normal"
+      },
+      {
+        "signature": "startWork()",
+        "actor": "actor",
+        "mode": "normal"
+      },
+      {
+        "signature": "transferOwnership(address)",
+        "actor": "admin",
+        "mode": "normal"
+      }
+    ],
+    "separated": true
+  }
+}

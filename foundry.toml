@@ -7,7 +7,7 @@ libs = ["lib"]
 remappings = [
 #                "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
                  "@chainlink/contracts/=lib/chainlink-brownie-contracts/contracts/",
-                 "@chainlink-local/src/=lib/chainlink-local/src/"
+                 "@cl/src/=lib/chainlink-local/src/"
              ]
 
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
