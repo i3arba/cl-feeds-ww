@@ -23,12 +23,10 @@ abstract contract CLFExampleTargets is
 
     function cLFExample_endContract() public asActor {
         cLFExample.endContract();
-        t(false, "CLFExample_endContract");
     }
 
     function cLFExample_endWork() public asActor {
         cLFExample.endWork();
-        t(false, "cLFExample_endWork");
     }
 
     function cLFExample_payEmployee() public asActor {

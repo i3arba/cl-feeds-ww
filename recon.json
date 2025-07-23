@@ -4,12 +4,12 @@
       {
         "signature": "endContract()",
         "actor": "actor",
-        "mode": "fail"
+        "mode": "normal"
       },
       {
         "signature": "endWork()",
         "actor": "actor",
-        "mode": "fail"
+        "mode": "normal"
       },
       {
         "signature": "payEmployee()",

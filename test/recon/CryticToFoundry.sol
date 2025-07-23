@@ -19,18 +19,5 @@ contract CryticToFoundry is Test, TargetFunctions, FoundryAsserts {
     function test_crytic() public {
         // TODO: add failing property tests here for debugging
     }
-
-    // forge test --match-test test_cLFExample_endWork_1o8u -vvv
-    
-    function test_cLFExample_endWork_1o8u() public {
-      
-       vm.roll(2162);
-       vm.warp(3601);
-       cLFExample_startWork();
-      
-       vm.roll(2162);
-       vm.warp(3601);
-       cLFExample_endWork();
-    }
    		
 }
