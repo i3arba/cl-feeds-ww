@@ -7,6 +7,7 @@ import {Setup} from "./Setup.sol";
 abstract contract BeforeAfter is Setup {
     struct Vars {
         uint256 __ignore__;
+        uint256 contractBalance;
     }
 
     Vars internal _before;
@@ -19,10 +20,11 @@ abstract contract BeforeAfter is Setup {
     }
 
     function __before() internal {
-
+        _before.contractBalance = address(cLFExample).balance;
     }
 
     function __after() internal {
-
+        _after.contractBalance = address(cLFExample).balance;
+        assert(_after.contractBalance == _before.contractBalance);
     }
 }

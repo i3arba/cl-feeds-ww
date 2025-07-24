@@ -29,6 +29,8 @@ abstract contract Setup is BaseSetup, ActorManager, AssetManager, Utils {
             address(this), // owner
             _getActor() // Actor address
         );
+
+        vm.deal(address(cLFExample), type(uint256).max);
     }
 
     /// === MODIFIERS === ///
@@ -43,4 +45,7 @@ abstract contract Setup is BaseSetup, ActorManager, AssetManager, Utils {
         vm.prank(address(_getActor()));
         _;
     }
+
+    /// ==== HELPERS ==== ///
+    receive() external payable {}
 }

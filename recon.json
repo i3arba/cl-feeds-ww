@@ -3,38 +3,38 @@
     "functions": [
       {
         "signature": "endContract()",
-        "actor": "actor",
-        "mode": "normal"
+        "actor": "admin",
+        "mode": "fail"
       },
       {
         "signature": "endWork()",
         "actor": "actor",
-        "mode": "normal"
+        "mode": "fail"
       },
       {
         "signature": "payEmployee()",
-        "actor": "actor",
-        "mode": "normal"
+        "actor": "admin",
+        "mode": "fail"
       },
       {
         "signature": "renounceOwnership()",
         "actor": "actor",
-        "mode": "normal"
+        "mode": "fail"
       },
       {
         "signature": "setRate(uint256)",
         "actor": "admin",
-        "mode": "normal"
+        "mode": "fail"
       },
       {
         "signature": "startWork()",
         "actor": "actor",
-        "mode": "normal"
+        "mode": "fail"
       },
       {
         "signature": "transferOwnership(address)",
         "actor": "admin",
-        "mode": "normal"
+        "mode": "fail"
       }
     ],
     "separated": true

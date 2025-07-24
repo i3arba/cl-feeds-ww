@@ -61,6 +61,10 @@ contract CLFExample is Ownable{
     event CLFExample_WorkingJourneyStarted(uint256 startTime);
     ///@notice event emitted when the working journey is ended
     event CLFExample_WorkingJourneyFinished(uint256 endTime, uint256 timeWorked);
+    ///@notice event emitted when the contract is terminated
+    event CLFExample_ContractTerminated(uint256 endTime);
+    ///@notice event emitted when the employee is paid
+    event CLFExample_EmployeePaid(address employee, uint256 amountPaid);
 
     /*///////////////////////////////////
                 Errors
@@ -153,6 +157,9 @@ contract CLFExample is Ownable{
     function setRate(uint256 _newRate) external onlyOwner{
         if(_newRate < MIN_RATE) revert CLFExample_RatePerHourIsToLow(_newRate, MIN_RATE);
 
+        ///Breaks CEI. However, receiver is not able to reenter the function
+        payEmployee();
+
         uint256 oldRate = s_rate;
         s_rate = _newRate;
 
@@ -165,6 +172,8 @@ contract CLFExample is Ownable{
     function endContract() external onlyOwner {
         s_contractStatus = ContractStatus.terminated;
         payEmployee();
+
+        emit CLFExample_ContractTerminated(block.timestamp);
     }
 
     /*///////////////////////////////////
@@ -178,6 +187,8 @@ contract CLFExample is Ownable{
 
         uint256 amountToPay = _calculateSalary();
         s_unpaidWorkTime = 0;
+
+        emit CLFExample_EmployeePaid(i_employee, amountToPay);
 
         _transferAmount(amountToPay);
     }

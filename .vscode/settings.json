@@ -1,3 +1,5 @@
 {
-    "recon.defaultFuzzer": "echidna"
+    "recon.defaultFuzzer": "echidna",
+    "recon.echidna.mode": "assertion",
+    "recon.showAllFiles": false
 }

@@ -21,31 +21,43 @@ abstract contract CLFExampleTargets is
 
     /// AUTO GENERATED TARGET FUNCTIONS - WARNING: DO NOT DELETE OR MODIFY THIS LINE ///
 
-    function cLFExample_endContract() public asActor {
-        cLFExample.endContract();
+    function cLFExample_startWork() public asActor updateGhosts{
+        // 2. User shouldn't be able to start working after the end of the contract
+        cLFExample.startWork();
     }
 
-    function cLFExample_endWork() public asActor {
+    function cLFExample_endWork(uint256 _workedTime) public asActor updateGhosts{
+        cLFExample.startWork();
+
+        vm.warp(block.timestamp + _workedTime);
+
         cLFExample.endWork();
     }
 
-    function cLFExample_payEmployee() public asActor {
+    function cLFExample_endContract() public asAdmin {
+        // 3. The contract should'not be terminate while there is salary pendent to be paid
+        cLFExample.endContract();
+    }
+
+    function cLFExample_payEmployee() public asAdmin {
+        // 1. Worker can't receive a different amount of ETH than it's due to him.
+        // Which means, he cannot receive more or less than the result of:
+        // salary = (((unpaidWorkTime * 1e18) * rateHours)/3600) / lastETH/USD price
         cLFExample.payEmployee();
     }
 
-    function cLFExample_renounceOwnership() public asActor {
+    function cLFExample_renounceOwnership() public asActor updateGhosts{
         cLFExample.renounceOwnership();
     }
 
     function cLFExample_setRate(uint256 _newRate) public asAdmin {
         cLFExample.setRate(_newRate);
+
+        gte(cLFExample.s_rate(), cLFExample.MIN_RATE(), "Rate was not updated to a valid value");
+        eq(cLFExample.s_unpaidWorkTime(), 0, "Rate was updated without paying the amount due");
     }
 
-    function cLFExample_startWork() public asActor {
-        cLFExample.startWork();
-    }
-
-    function cLFExample_transferOwnership(address newOwner) public asAdmin {
+    function cLFExample_transferOwnership(address newOwner) public asAdmin updateGhosts{
         cLFExample.transferOwnership(newOwner);
     }
 }
