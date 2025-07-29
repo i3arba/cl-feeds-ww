@@ -25,13 +25,13 @@ contract CLFExample is Ownable{
         paused,
         terminated
     }
-    ContractStatus s_contractStatus;
+    ContractStatus public s_contractStatus;
 
     enum WorkStatus{
         working,
         endWorking
     }
-    WorkStatus s_workStatus;
+    WorkStatus public s_workStatus;
 
     ///@notice immutable variable to store the Feeds Address - DON'T DO THIS IN PRODUCTION
     AggregatorV3Interface immutable i_feed;
@@ -39,9 +39,9 @@ contract CLFExample is Ownable{
     address immutable i_employee;
 
     ///@notice constant variable to store the Feed's heartbeat
-    uint256 constant HEARTBEAT = 3600;
+    uint256 public constant HEARTBEAT = 3600;
     ///@notice constant variable to store the minimum rate per hour value
-    uint256 public constant MIN_RATE = 750_000_000; //$ 7.50 using Oracle Decimals
+    uint256 public constant MIN_RATE = 7.5e8; //$ 7.50 using Oracle Decimals
     ///@notice constant to store the precision multiplier
     uint256 public constant PRECISION_HELPER = 1e18;
 
@@ -50,7 +50,7 @@ contract CLFExample is Ownable{
     ///@notice variable to store the total unpaid worked hours
     uint256 public s_unpaidWorkTime;
     ///@notice variable to store the current work session
-    uint256 internal s_currentWorkingSession;
+    uint256 public s_currentWorkingSession;
 
     /*///////////////////////////////////
                 Events
@@ -171,6 +171,7 @@ contract CLFExample is Ownable{
     */
     function endContract() external onlyOwner {
         s_contractStatus = ContractStatus.terminated;
+        s_workStatus = WorkStatus.endWorking;
         payEmployee();
 
         emit CLFExample_ContractTerminated(block.timestamp);
@@ -196,7 +197,6 @@ contract CLFExample is Ownable{
     /*///////////////////////////////////
                 internal
     ///////////////////////////////////*/
-
     /**
         *@notice internal function to perform eth transfers
         *@param _value the amount to be transferred
@@ -204,6 +204,23 @@ contract CLFExample is Ownable{
     function _transferAmount(uint256 _value) internal {
         (bool success, bytes memory data) = i_employee.call{value: _value}("");
         if(!success) revert CLFExample_TransferFailed(data);
+    }
+
+    /*///////////////////////////////////
+            View & Pure
+    ///////////////////////////////////*/
+    /**
+        *@notice internal function to calculate the employee salary
+        *@return salary_ the amount to be paid
+        *@dev the returned value must be based on 18 decimals.
+    */
+    function _calculateSalary() internal view returns(uint256 salary_){
+        uint256 workedHours = s_unpaidWorkTime * PRECISION_HELPER;
+
+        ///@notice convert on value/hours
+        uint256 totalInUSD = (workedHours * s_rate) / 3600;
+        
+        salary_ = totalInUSD / uint256(_getFeedLastAnswer());
     }
 
     /**
@@ -226,22 +243,5 @@ contract CLFExample is Ownable{
         ///@notice validation example
         if(block.timestamp - updatedAt > HEARTBEAT) revert CLFExample_StalePrice();
         if(answer_ <= 0) revert CLFExample_WrongPrice();
-    }
-
-    /*///////////////////////////////////
-            View & Pure
-    ///////////////////////////////////*/
-    /**
-        *@notice internal function to calculate the employee salary
-        *@return salary_ the amount to be paid
-        *@dev the returned value must be based on 18 decimals.
-    */
-    function _calculateSalary() internal view returns(uint256 salary_){
-        uint256 workedHours = s_unpaidWorkTime * PRECISION_HELPER;
-
-        ///@notice convert on value/hours
-        uint256 totalInUSD = (workedHours * s_rate) / 3600;
-        
-        salary_ = totalInUSD / uint256(_getFeedLastAnswer());
     }
 }

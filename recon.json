@@ -27,13 +27,13 @@
         "mode": "fail"
       },
       {
-        "signature": "startWork()",
-        "actor": "actor",
+        "signature": "transferOwnership(address)",
+        "actor": "admin",
         "mode": "fail"
       },
       {
-        "signature": "transferOwnership(address)",
-        "actor": "admin",
+        "signature": "startWork()",
+        "actor": "actor",
         "mode": "fail"
       }
     ],

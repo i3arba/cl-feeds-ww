@@ -19,18 +19,24 @@ import "src/CLFExample.sol";
 import { MockV3Aggregator } from "@cl/src/data-feeds/MockV3Aggregator.sol";
 
 abstract contract Setup is BaseSetup, ActorManager, AssetManager, Utils {
-    CLFExample cLFExample;
+    CLFExample clf;
     
+    uint256 constant SECONDS_IN_A_HOUR = 3600;
+    uint256 constant INITIAL_ORACLE_ANSWER = 3_000e8;
+    uint256 constant PRECISION_HELPER = 1e18;
+
+    uint256 functionCalled;
+
     /// === Setup === ///
     /// This contains all calls to be performed in the tester constructor, both for Echidna and Foundry
     function setup() internal virtual override {
-        cLFExample = new CLFExample(
-            address(new MockV3Aggregator(8, 20e8)), // feeds
+        clf = new CLFExample(
+            address(new MockV3Aggregator(8, int256(INITIAL_ORACLE_ANSWER))), // feeds
             address(this), // owner
             _getActor() // Actor address
         );
 
-        vm.deal(address(cLFExample), type(uint256).max);
+        vm.deal(address(clf), type(uint256).max);
     }
 
     /// === MODIFIERS === ///

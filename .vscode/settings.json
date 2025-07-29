@@ -1,5 +1,5 @@
 {
-    "recon.defaultFuzzer": "echidna",
+    "recon.defaultFuzzer": "medusa",
     "recon.echidna.mode": "assertion",
     "recon.showAllFiles": false
 }

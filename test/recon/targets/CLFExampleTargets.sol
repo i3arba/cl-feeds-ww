@@ -18,46 +18,58 @@ abstract contract CLFExampleTargets is
 {
     /// CUSTOM TARGET FUNCTIONS - Add your own target functions here ///
 
-
     /// AUTO GENERATED TARGET FUNCTIONS - WARNING: DO NOT DELETE OR MODIFY THIS LINE ///
 
-    function cLFExample_startWork() public asActor updateGhosts{
-        // 2. User shouldn't be able to start working after the end of the contract
-        cLFExample.startWork();
+    function cLFExample_startWork() public asActor updateGhosts {
+        functionCalled = 1;
+        clf.startWork();
     }
 
     function cLFExample_endWork(uint256 _workedTime) public asActor updateGhosts{
-        cLFExample.startWork();
+        functionCalled = 0;
+
+        uint256 unpaidWork = clf.s_unpaidWorkTime();
+        
+        between(_workedTime, 10, type(uint120).max);
+
+        clf.startWork();
 
         vm.warp(block.timestamp + _workedTime);
 
-        cLFExample.endWork();
+        clf.endWork();
+
+        // ⚠️ Unpaid work should always increase after the work ends.
+        gt(clf.s_unpaidWorkTime(), unpaidWork, "The Unpaid Work Time Haven't Increased When the Work Ends");
     }
 
     function cLFExample_endContract() public asAdmin {
+        functionCalled = 0;
+
+        clf.endContract();
+
         // 3. The contract should'not be terminate while there is salary pendent to be paid
-        cLFExample.endContract();
+        eq(clf.s_unpaidWorkTime(), 0, "Rate was updated without paying the amount due");
     }
 
-    function cLFExample_payEmployee() public asAdmin {
+    function cLFExample_payEmployee() public asAdmin updateGhosts {
+        functionCalled = 0;
         // 1. Worker can't receive a different amount of ETH than it's due to him.
         // Which means, he cannot receive more or less than the result of:
         // salary = (((unpaidWorkTime * 1e18) * rateHours)/3600) / lastETH/USD price
-        cLFExample.payEmployee();
-    }
+        uint256 amountToReceive = (((clf.s_unpaidWorkTime() * PRECISION_HELPER) * clf.s_rate()) / SECONDS_IN_A_HOUR) / INITIAL_ORACLE_ANSWER;
+        uint256 employeeInitialBalance = _getActor().balance;
 
-    function cLFExample_renounceOwnership() public asActor updateGhosts{
-        cLFExample.renounceOwnership();
+        clf.payEmployee();
+
+        eq(employeeInitialBalance + amountToReceive, _getActor().balance, "The Amount Paid Is Incorrect");
     }
 
     function cLFExample_setRate(uint256 _newRate) public asAdmin {
-        cLFExample.setRate(_newRate);
+        functionCalled = 0;
 
-        gte(cLFExample.s_rate(), cLFExample.MIN_RATE(), "Rate was not updated to a valid value");
-        eq(cLFExample.s_unpaidWorkTime(), 0, "Rate was updated without paying the amount due");
-    }
+        clf.setRate(_newRate);
 
-    function cLFExample_transferOwnership(address newOwner) public asAdmin updateGhosts{
-        cLFExample.transferOwnership(newOwner);
+        gte(clf.s_rate(), clf.MIN_RATE(), "Rate was not updated to a valid value");
+        eq(clf.s_unpaidWorkTime(), 0, "Rate was updated without paying the amount due");
     }
 }
