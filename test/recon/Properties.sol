@@ -15,10 +15,10 @@ abstract contract Properties is BeforeAfter, Asserts {
     }
 
     // 3. Worker cannot start a new work session while the previous is still running.
-
+    //TODO: Need to improve
     function invariant_userShouldNotStartANewSessionIfThePreviousIsRunning() public view {
         if (_before.workStatus == uint8(CLFExample.WorkStatus.working)) {
-            assert(_after.workStatus != uint8(CLFExample.WorkStatus.working));
+            assert(block.timestamp > clf.s_currentWorkingSession());
         }
     }
 

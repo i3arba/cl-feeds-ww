@@ -25,16 +25,14 @@ abstract contract CLFExampleTargets is
         clf.startWork();
     }
 
-    function cLFExample_endWork(uint256 _workedTime) public asActor updateGhosts{
+    function cLFExample_endWork(uint248 _workedTime) public asActor updateGhosts{
         functionCalled = 0;
 
         uint256 unpaidWork = clf.s_unpaidWorkTime();
-        
-        between(_workedTime, 10, type(uint120).max);
 
         clf.startWork();
 
-        vm.warp(block.timestamp + _workedTime);
+        vm.warp(block.timestamp + _workedTime +1);
 
         clf.endWork();
 
